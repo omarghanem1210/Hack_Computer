@@ -1,3 +1,5 @@
+import re
+
 A_INSTRUCTION = 'A'
 C_INSTRUCTION = 'C'
 L_INSTRUCTION = 'L'
@@ -17,13 +19,13 @@ class Parser:
 
         self.file = file
         # Current line in file
-        self.line = None
-        self.lineNumber = 0
+        self.lines = file.readlines()
+        self.lineNumber = -1
         self.advance()
 
     def hasMoreLines(self):
         """
-       Checks if file has more line or if the current line is the end
+       Checks if file has more lines or if the current line is the end
 
        Returns:
 
@@ -31,14 +33,19 @@ class Parser:
 
        True if file has more line or false if the current line is the end
        """
-        raise RuntimeError('Not implemented')
+        if self.lineNumber < len(self.lines) - 1:
+            return True
+        return False
 
     def advance(self):
         """
         Advances the reading of the file by one line while jumping over any line that is white space
         or a comment
         """
-        raise RuntimeError('Not implemented')
+        while self.hasMoreLines():
+            self.lineNumber += 1
+            if not (self.lines[self.lineNumber][0] == '/' or self.lines[self.lineNumber] == '\n'):
+                break
 
     def instructionType(self):
         """
@@ -49,7 +56,12 @@ class Parser:
             C_INSTRUCTION if the instruction is of type C
             L_INSTRUCTION if the instruction is of type L
         """
-        raise RuntimeError('Not implemented')
+        instruction = self.lines[self.lineNumber]
+        if instruction[0] == '@':
+            return A_INSTRUCTION
+        elif instruction[0] == '(':
+            return L_INSTRUCTION
+        return C_INSTRUCTION
 
     def symbol(self):
         """
@@ -58,7 +70,10 @@ class Parser:
         Returns:
             symbol : String
         """
-        raise RuntimeError('Not implemented')
+
+        result = re.search('(\w+)', self.lines[self.lineNumber])
+        symbol = result.group()
+        return symbol
 
     def dest(self):
         """
@@ -66,8 +81,13 @@ class Parser:
 
         Returns:
             dest : String
+            the dest part of the current C-instruction if it exists else dest is an empty string
         """
-        raise RuntimeError('Not implemented')
+        if '=' not in self.lines[self.lineNumber]:
+            return ''
+        result = re.search('\w+=', self.lines[self.lineNumber])
+        dest = result.group()
+        return dest[0:len(dest) - 1]
 
     def comp(self):
         """
@@ -76,7 +96,13 @@ class Parser:
         Returns:
             comp : String
         """
-        raise RuntimeError('Not implemented')
+        if '=' not in self.lines[self.lineNumber]:
+            result = re.search('[^;]', self.lines[self.lineNumber])
+            comp = result.group()
+            return comp
+        result = re.search('=.*', self.lines[self.lineNumber])
+        comp = result.group()
+        return comp[1:]
 
     def jump(self):
         """
@@ -84,8 +110,14 @@ class Parser:
 
         Returns:
             jmp : String
+             the jmp part of the current C-instruction if it exists else jmp is an empty string
+
         """
-        raise RuntimeError('Not implemented')
+        if ';' not in self.lines[self.lineNumber]:
+            return ''
+        result = re.search(';.*', self.lines[self.lineNumber])
+        jmp = result.group()
+        return jmp[1:].strip()
 
     def getLineNumber(self):
         """

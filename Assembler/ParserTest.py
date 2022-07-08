@@ -10,9 +10,9 @@ class ParserTest(unittest.TestCase):
         file = open(fileLink, 'r')
         parser = Parser(file)
 
-        self.assertEqual(9, parser.getLineNumber())
+        self.assertEqual(8, parser.getLineNumber())
         parser.advance()
-        self.assertEqual(10, parser.getLineNumber())
+        self.assertEqual(9, parser.getLineNumber())
 
         file.close()
 
@@ -59,21 +59,46 @@ class ParserTest(unittest.TestCase):
 
         file.close()
 
+    def testComp(self):
+        file = open(fileLink, 'r')
+        parser = Parser(file)
+
+        parser.advance()
+        self.assertEqual('1', parser.comp())
+        parser.advance()
+        parser.advance()
+        self.assertEqual('0', parser.comp())
+        parser.advance()
+        parser.advance()
+        parser.advance()
+        parser.advance()
+        parser.advance()
+        self.assertEqual('D-M', parser.comp())
+        parser.advance()
+        parser.advance()
+        self.assertEqual('D', parser.comp())
+
+
+        file.close()
+
     def testDest(self):
         file = open(fileLink, 'r')
         parser = Parser(file)
 
         parser.advance()
-        self.assertEqual('1', parser.dest())
+        self.assertEqual('M', parser.dest())
         parser.advance()
         parser.advance()
-        self.assertEqual('0', parser.dest())
+        self.assertEqual('M', parser.dest())
         parser.advance()
         parser.advance()
         parser.advance()
         parser.advance()
         parser.advance()
-        self.assertEqual('D-M', parser.dest())
+        self.assertEqual('D', parser.dest())
+        parser.advance()
+        parser.advance()
+        self.assertEqual('', parser.dest())
 
         file.close()
 
@@ -90,7 +115,6 @@ class ParserTest(unittest.TestCase):
         self.assertEqual('JMP', parser.jump())
 
         file.close()
-
 
 
 if __name__ == '__main__':
