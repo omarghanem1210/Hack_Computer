@@ -56,7 +56,7 @@ class Parser:
             C_INSTRUCTION if the instruction is of type C
             L_INSTRUCTION if the instruction is of type L
         """
-        instruction = self.lines[self.lineNumber]
+        instruction = self.lines[self.lineNumber].strip()
         if instruction[0] == '@':
             return A_INSTRUCTION
         elif instruction[0] == '(':
@@ -73,7 +73,7 @@ class Parser:
 
         result = re.search('(\w+)', self.lines[self.lineNumber])
         symbol = result.group()
-        return symbol
+        return symbol.strip()
 
     def dest(self):
         """
@@ -81,13 +81,18 @@ class Parser:
 
         Returns:
             dest : String
-            the dest part of the current C-instruction if it exists else dest is an empty string
+            the dest part of the current C-instruction if it exists else dest is a null string
         """
-        if '=' not in self.lines[self.lineNumber]:
-            return ''
-        result = re.search('\w+=', self.lines[self.lineNumber])
+        s = self.lines[self.lineNumber]
+        if '//' in s:
+            x = s.index('//')
+            s = s[0:x]
+        s.strip()
+        if '=' not in s:
+            return 'null'
+        result = re.search('\w+=', s)
         dest = result.group()
-        return dest[0:len(dest) - 1]
+        return dest[0:len(dest) - 1].strip()
 
     def comp(self):
         """
@@ -96,13 +101,19 @@ class Parser:
         Returns:
             comp : String
         """
-        if '=' not in self.lines[self.lineNumber]:
-            result = re.search('[^;]', self.lines[self.lineNumber])
+        s = self.lines[self.lineNumber]
+        if '//' in s:
+            x = s.index('//')
+            s = s[0:x]
+        s = s.strip()
+
+        if '=' not in s:
+            result = re.search('[^;]', s)
             comp = result.group()
             return comp
-        result = re.search('=.*', self.lines[self.lineNumber])
+        result = re.search('=.*', s)
         comp = result.group()
-        return comp[1:]
+        return comp[1:].strip()
 
     def jump(self):
         """
@@ -110,12 +121,18 @@ class Parser:
 
         Returns:
             jmp : String
-             the jmp part of the current C-instruction if it exists else jmp is an empty string
+             the jmp part of the current C-instruction if it exists else jmp is a null string
 
         """
-        if ';' not in self.lines[self.lineNumber]:
-            return ''
-        result = re.search(';.*', self.lines[self.lineNumber])
+        s = self.lines[self.lineNumber]
+        if '//' in s:
+            x = s.index('//')
+            s = s[0:x]
+        s.strip()
+
+        if ';' not in s:
+            return 'null'
+        result = re.search(';.*', s)
         jmp = result.group()
         return jmp[1:].strip()
 
@@ -127,3 +144,10 @@ class Parser:
              lineNumber: Integer
         """
         return self.lineNumber
+
+    def getTotalLines(self):
+        """
+
+        Returns: The total number of lines in the file
+        """
+        return len(self.lines) - 1

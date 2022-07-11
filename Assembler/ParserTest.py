@@ -98,7 +98,7 @@ class ParserTest(unittest.TestCase):
         self.assertEqual('D', parser.dest())
         parser.advance()
         parser.advance()
-        self.assertEqual('', parser.dest())
+        self.assertEqual('null', parser.dest())
 
         file.close()
 

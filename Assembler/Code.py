@@ -1,6 +1,3 @@
-dest_codes = {'null': '000', 'M': '001', 'D': '010', 'DM': '011', 'A': '100', 'AM': '101',
-              'AD': '110', 'ADM': '111'}
-
 comp_codes = {'0': '0101010', '1': '0111111', '-1': '0111010', 'D': '0001100', 'A': '0110000', '!D': '0001101',
               '!A': '0110001', '-D': '0001111', '-A': '0110011', 'D+1': '0011111', 'A+1': '0110111',
               'D-1': '0001110', 'A-1': '0110010', 'D+A': '0000010', 'D-A': '0010011', 'A-D': '0000111',
@@ -21,7 +18,22 @@ def dest(s):
     return:A string consisting of 1s and 0s representing the binary code of a dest part
 
     """
-    return dest_codes[s]
+    s1 = ''
+    s2 = ''
+    s3 = ''
+    if 'A' in s:
+        s1 = '1'
+    else:
+        s1 = '0'
+    if 'D' in s:
+        s2 = '1'
+    else:
+        s2 = '0'
+    if 'M' in s:
+        s3 = '1'
+    else:
+        s3 = '0'
+    return s1 + s2 + s3
 
 
 def comp(s):
